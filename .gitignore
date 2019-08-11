@@ -1,5 +1,6 @@
 .DS_Store
 node_modules
+操作.md
 
 # local env files
 .env.local

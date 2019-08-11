@@ -13,7 +13,8 @@
 </template>
 
 <script>
-import ScheduleSelector from "./components/index.js";
+import ScheduleSelector from "./components/ScheduleSelector";
+// import ScheduleSelector from "./components/index.js";
 
 export default {
   name: "schedule",
