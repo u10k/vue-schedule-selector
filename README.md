@@ -6,9 +6,9 @@
 A friendly when2meet-style grid-based schedule selector built with and date-fns.
 
 
-[Live example](https://codesandbox.io/s/vue-schedule-selector-kxd9g)
+[Live example](https://codesandbox.io/s/vue-schedule-selector-t6bhe)
 
-<img src='http://ww2.sinaimg.cn/large/006tNc79gy1g5nxi5uwlgj30u00v7tab.jpg'>
+<img src='http://ww3.sinaimg.cn/large/006tNc79gy1g5w82vxhxvj30ui0u0768.jpg'>
 
 
 ## install

@@ -26,7 +26,7 @@ export default {
       maxTime: 23,
       numDays: 7,
       schedule: [],
-      autoComplete: false,
+      autoComplete: true,
     };
   },
   components: {
