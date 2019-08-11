@@ -6,6 +6,7 @@
               :maxTime="maxTime"
               :numDays="numDays"
               :selection="schedule"
+              :autoComplete="autoComplete"
               @onChange="handleDateChange"
       />
     </div>
@@ -21,10 +22,11 @@ export default {
   // inheritAttrs: false,
   data() {
     return {
-      minTime: 1,
-      maxTime: 24,
+      minTime: 0,
+      maxTime: 23,
       numDays: 7,
-      schedule: []
+      schedule: [],
+      autoComplete: false,
     };
   },
   components: {
@@ -33,9 +35,11 @@ export default {
   mounted() {},
   methods: {
     handleDateChange(newSchedule) {
-      console.log(newSchedule);
+      console.log('%c您选择是的时间是', 'color:darkred;text-shadow:3px 3px 3px red;font-size:20px;', newSchedule);
+      // 如果不赋值，则每次都是重新选择
       this.schedule = newSchedule;
-    }
+
+    },
   }
 };
 </script>
@@ -48,7 +52,7 @@ export default {
     background: rgba(0, 0, 0, 0.03);
     padding: 20px;
     width: 90%;
-    max-width: 800px;
+    min-width: 800px;
     & > * {
       flex-grow: 1;
   }

@@ -1,15 +1,20 @@
 # vue-schedule-selector
 <a href="https://www.npmjs.com/package/vue-schedule-selector" target="_blank" rel="external"><img src="https://img.shields.io/npm/v/vue-schedule-selector.svg" style="width: auto; height: auto"></a><a href="https://www.npmjs.com/package/vue-schedule-selector"><img src="https://img.shields.io/npm/dm/vue-schedule-selector.svg" style="width: auto; height: auto"></a>
 
-## Project setup
+### vue-schedule-selector
+
+A friendly when2meet-style grid-based schedule selector built with and date-fns.
+
+
+[Live example](https://codesandbox.io/s/vue-schedule-selector-kxd9g)
+
+<img src='http://ww2.sinaimg.cn/large/006tNc79gy1g5nxi5uwlgj30u00v7tab.jpg'>
+
+
+## install
 ```
 npm install vue-schedule-selector
 ```
-
-### vue-schedule-selector
-一款高级时间选择器（vue）
-
-<img src='http://ww2.sinaimg.cn/large/006tNc79gy1g5nxi5uwlgj30u00v7tab.jpg'>
 
 ```html
 <ScheduleSelector
@@ -23,7 +28,7 @@ npm install vue-schedule-selector
 ```javascript
 import ScheduleSelector from "vue-schedule-selector";
 export default {
-  name: "schedule",
+  name: "scheduleSelector",
   data() {
     return {
       minTime: 1,

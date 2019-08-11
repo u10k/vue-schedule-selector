@@ -4,14 +4,17 @@
       <div class="Grid">
         <div class="Column">
           <div class="DateLabel"></div>
-          <div class="TimeLabelCell" v-for="t in maxTime">
+          <div class="TimeLabelCell" v-if="minTime == 0">
+            <div class="TimeText">{{ formatHour(0) }}</div>
+          </div>
+          <div class="TimeLabelCell" v-for="t in maxTime" v-if="t >= minTime">
             <div class="TimeText">{{ formatHour(t) }}</div>
           </div>
         </div>
         <div v-for="dayOfTimes in this.dates">
           <div class="Column">
             <div class="GridCell">
-              <div class="DateLabel">{{ formatDate(dayOfTimes, "M/D") }}</div>
+              <div class="DateLabel">{{ getDay(dayOfTimes) }}</div>
             </div>
           </div>
           <div class="GridCell" v-for="time in dayOfTimes">
@@ -41,6 +44,9 @@ import addDays from "date-fns/add_days";
 import startOfDay from "date-fns/start_of_day";
 import isSameMinute from "date-fns/is_same_minute";
 import formatDate from "date-fns/format";
+import getDay from "date-fns/get_day";
+import getHours from "date-fns/get_hours";
+import startOfWeek from "date-fns/start_of_week";
 import selectionSchemes from "./selection-schemes";
 
 // endSelection = endSelection.bind(this)
@@ -53,7 +59,7 @@ export default {
   data() {
     return {
       dates: [],
-      startDate: new Date(),
+      startDate: startOfWeek(new Date()),
       selectionDraft: [...this.selection],
       selectionType: null,
       selectionStart: null,
@@ -77,6 +83,35 @@ export default {
       type: Array,
       default: () => {
         [];
+      }
+    },
+    autoComplete: {
+      type: Boolean,
+      default: false
+    }
+  },
+  watch: {
+    selection(dateList) {
+      // 如果开通自动补齐功能，则自动补齐选择一天中的空隙时间
+      if (this.autoComplete) {
+        let dayObj = {},dayAry = [];
+        for (let i = 0; i < dateList.length; i++) {
+          if(!dayObj[`${formatDate(dateList[i], 'YYYY/MM/DD')}`]){
+            dayObj[`${formatDate(dateList[i], 'YYYY/MM/DD')}`] = [];
+          }
+          dayObj[`${formatDate(dateList[i], 'YYYY/MM/DD')}`].push(getHours(dateList[i]));
+        }
+        for (let key in dayObj) {
+          let emptyArr = [];
+          let max = Math.max.apply(null, dayObj[key]);
+          let min = Math.min.apply(null, dayObj[key]);
+          for (let startTime = min; startTime<=max;startTime ++){
+            emptyArr.push(addHours(new Date(key), startTime))
+          }
+          dayAry = dayAry.concat(emptyArr)
+        }
+
+        this.selectionDraft = dayAry;
       }
     }
   },
@@ -105,8 +140,37 @@ export default {
       // return `${abb}${h}`
       return `${hour === 24 ? "00" : hour}:00`;
     },
-    formatDate(dayOfTimes, dateFormat) {
-      return formatDate(dayOfTimes[0], dateFormat);
+    // formatHour(hour) {
+    //   const h = hour === 0 || hour === 12 || hour === 24 ? 12 : hour % 12
+    //   const abb = hour < 12 || hour === 24 ? 'am' : 'pm'
+    //   return `${h}${abb}`
+    // },
+    getDay(dayOfTimes) {
+      let day = '星期日';
+      switch (getDay(dayOfTimes[0])) {
+        case 1:
+          day = '星期一';
+          break;
+        case 2:
+          day = '星期二';
+          break;
+        case 3:
+          day = '星期三';
+          break;
+        case 4:
+          day = '星期四';
+          break;
+        case 5:
+          day = '星期五';
+          break;
+        case 6:
+          day = '星期六';
+          break;
+        default:
+          day = '星期日';
+          break;
+      }
+      return day;
     },
     endSelection() {
       this.$emit("onChange", this.selectionDraft);
@@ -225,7 +289,7 @@ export default {
   display: block;
   width: 100%;
   height: 25px;
-  margin: 3px 0;
+  margin: 2px 0;
   text-align: center;
   display: flex;
   justify-content: center;

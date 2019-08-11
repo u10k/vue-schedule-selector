@@ -743,14 +743,14 @@ module.exports = function (exec) {
 
 "use strict";
 
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"2a389e64-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/ScheduleSelector.vue?vue&type=template&id=5dd084a1&scoped=true&
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('div',{staticClass:"Wrapper"},[_c('div',{staticClass:"Grid"},[_c('div',{staticClass:"Column"},[_c('div',{staticClass:"DateLabel"}),_vm._l((_vm.maxTime),function(t){return _c('div',{staticClass:"TimeLabelCell"},[_c('div',{staticClass:"TimeText"},[_vm._v(_vm._s(_vm.formatHour(t)))])])})],2),_vm._l((this.dates),function(dayOfTimes){return _c('div',[_c('div',{staticClass:"Column"},[_c('div',{staticClass:"GridCell"},[_c('div',{staticClass:"DateLabel"},[_vm._v(_vm._s(_vm.formatDate(dayOfTimes, "M/D")))])])]),_vm._l((dayOfTimes),function(time){return _c('div',{staticClass:"GridCell"},[_c('div',{on:{"mousedown":function($event){return _vm.startHandler(time)},"mouseenter":function($event){return _vm.handleMouseEnterEvent(time)},"mouseup":function($event){return _vm.handleMouseUpEvent(time)}}},[_c('div',{class:_vm.selected(time)
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"2a389e64-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/ScheduleSelector.vue?vue&type=template&id=e1f5644c&scoped=true&
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('div',{staticClass:"Wrapper"},[_c('div',{staticClass:"Grid"},[_c('div',{staticClass:"Column"},[_c('div',{staticClass:"DateLabel"}),(_vm.minTime == 0)?_c('div',{staticClass:"TimeLabelCell"},[_c('div',{staticClass:"TimeText"},[_vm._v(_vm._s(_vm.formatHour(0)))])]):_vm._e(),_vm._l((_vm.maxTime),function(t){return (t >= _vm.minTime)?_c('div',{staticClass:"TimeLabelCell"},[_c('div',{staticClass:"TimeText"},[_vm._v(_vm._s(_vm.formatHour(t)))])]):_vm._e()})],2),_vm._l((this.dates),function(dayOfTimes){return _c('div',[_c('div',{staticClass:"Column"},[_c('div',{staticClass:"GridCell"},[_c('div',{staticClass:"DateLabel"},[_vm._v(_vm._s(_vm.getDay(dayOfTimes)))])])]),_vm._l((dayOfTimes),function(time){return _c('div',{staticClass:"GridCell"},[_c('div',{on:{"mousedown":function($event){return _vm.startHandler(time)},"mouseenter":function($event){return _vm.handleMouseEnterEvent(time)},"mouseup":function($event){return _vm.handleMouseUpEvent(time)}}},[_c('div',{class:_vm.selected(time)
                   ? 'selectedColor DateCell'
                   : 'unselectedColor DateCell',attrs:{"selected":_vm.selected(time)}})])])})],2)})],2)])])}
 var staticRenderFns = []
 
 
-// CONCATENATED MODULE: ./src/components/ScheduleSelector.vue?vue&type=template&id=5dd084a1&scoped=true&
+// CONCATENATED MODULE: ./src/components/ScheduleSelector.vue?vue&type=template&id=e1f5644c&scoped=true&
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es6.set.js
 var es6_set = __webpack_require__("4f7f");
@@ -835,6 +835,18 @@ var is_same_minute_default = /*#__PURE__*/__webpack_require__.n(is_same_minute);
 // EXTERNAL MODULE: ./node_modules/date-fns/format/index.js
 var format = __webpack_require__("70f2");
 var format_default = /*#__PURE__*/__webpack_require__.n(format);
+
+// EXTERNAL MODULE: ./node_modules/date-fns/get_day/index.js
+var get_day = __webpack_require__("c2b5");
+var get_day_default = /*#__PURE__*/__webpack_require__.n(get_day);
+
+// EXTERNAL MODULE: ./node_modules/date-fns/get_hours/index.js
+var get_hours = __webpack_require__("5d95");
+var get_hours_default = /*#__PURE__*/__webpack_require__.n(get_hours);
+
+// EXTERNAL MODULE: ./node_modules/date-fns/start_of_week/index.js
+var start_of_week = __webpack_require__("c7ce");
+var start_of_week_default = /*#__PURE__*/__webpack_require__.n(start_of_week);
 
 // EXTERNAL MODULE: ./node_modules/date-fns/is_before/index.js
 var is_before = __webpack_require__("6b8f");
@@ -962,7 +974,13 @@ var square_square = function square(selectionStart, selectionEnd, dateList) {
 //
 //
 //
+//
+//
+//
 // Import only the methods we need from date-fns in order to keep build size small
+
+
+
 
 
 
@@ -979,7 +997,7 @@ var selectionSchemeHandlers = {
   data: function data() {
     return {
       dates: [],
-      startDate: new Date(),
+      startDate: start_of_week_default()(new Date()),
       selectionDraft: _toConsumableArray(this.selection),
       selectionType: null,
       selectionStart: null,
@@ -1003,6 +1021,41 @@ var selectionSchemeHandlers = {
       type: Array,
       default: function _default() {
         [];
+      }
+    },
+    autoComplete: {
+      type: Boolean,
+      default: false
+    }
+  },
+  watch: {
+    selection: function selection(dateList) {
+      // 如果开通自动补齐功能，则自动补齐选择一天中的空隙时间
+      if (this.autoComplete) {
+        var dayObj = {},
+            dayAry = [];
+
+        for (var i = 0; i < dateList.length; i++) {
+          if (!dayObj["".concat(format_default()(dateList[i], 'YYYY/MM/DD'))]) {
+            dayObj["".concat(format_default()(dateList[i], 'YYYY/MM/DD'))] = [];
+          }
+
+          dayObj["".concat(format_default()(dateList[i], 'YYYY/MM/DD'))].push(get_hours_default()(dateList[i]));
+        }
+
+        for (var key in dayObj) {
+          var emptyArr = [];
+          var max = Math.max.apply(null, dayObj[key]);
+          var min = Math.min.apply(null, dayObj[key]);
+
+          for (var startTime = min; startTime <= max; startTime++) {
+            emptyArr.push(add_hours_default()(new Date(key), startTime));
+          }
+
+          dayAry = dayAry.concat(emptyArr);
+        }
+
+        this.selectionDraft = dayAry;
       }
     }
   },
@@ -1034,8 +1087,45 @@ var selectionSchemeHandlers = {
 
       return "".concat(hour === 24 ? "00" : hour, ":00");
     },
-    formatDate: function formatDate(dayOfTimes, dateFormat) {
-      return format_default()(dayOfTimes[0], dateFormat);
+    // formatHour(hour) {
+    //   const h = hour === 0 || hour === 12 || hour === 24 ? 12 : hour % 12
+    //   const abb = hour < 12 || hour === 24 ? 'am' : 'pm'
+    //   return `${h}${abb}`
+    // },
+    getDay: function getDay(dayOfTimes) {
+      var day = '星期日';
+
+      switch (get_day_default()(dayOfTimes[0])) {
+        case 1:
+          day = '星期一';
+          break;
+
+        case 2:
+          day = '星期二';
+          break;
+
+        case 3:
+          day = '星期三';
+          break;
+
+        case 4:
+          day = '星期四';
+          break;
+
+        case 5:
+          day = '星期五';
+          break;
+
+        case 6:
+          day = '星期六';
+          break;
+
+        default:
+          day = '星期日';
+          break;
+      }
+
+      return day;
     },
     endSelection: function endSelection() {
       this.$emit("onChange", this.selectionDraft);
@@ -1101,8 +1191,8 @@ var selectionSchemeHandlers = {
 });
 // CONCATENATED MODULE: ./src/components/ScheduleSelector.vue?vue&type=script&lang=js&
  /* harmony default export */ var components_ScheduleSelectorvue_type_script_lang_js_ = (ScheduleSelectorvue_type_script_lang_js_); 
-// EXTERNAL MODULE: ./src/components/ScheduleSelector.vue?vue&type=style&index=0&id=5dd084a1&scoped=true&lang=css&
-var ScheduleSelectorvue_type_style_index_0_id_5dd084a1_scoped_true_lang_css_ = __webpack_require__("3b71");
+// EXTERNAL MODULE: ./src/components/ScheduleSelector.vue?vue&type=style&index=0&id=e1f5644c&scoped=true&lang=css&
+var ScheduleSelectorvue_type_style_index_0_id_e1f5644c_scoped_true_lang_css_ = __webpack_require__("5b4d");
 
 // CONCATENATED MODULE: ./node_modules/vue-loader/lib/runtime/componentNormalizer.js
 /* globals __VUE_SSR_CONTEXT__ */
@@ -1214,7 +1304,7 @@ var component = normalizeComponent(
   staticRenderFns,
   false,
   null,
-  "5dd084a1",
+  "e1f5644c",
   null
   
 )
@@ -1562,6 +1652,21 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 
 /***/ }),
 
+/***/ "3206":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("e6f0");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = __webpack_require__("499e").default
+var update = add("101aa95a", content, true, {"sourceMap":false,"shadowMode":false});
+
+/***/ }),
+
 /***/ "32e9":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1583,21 +1688,6 @@ module.exports = __webpack_require__("9e1e") ? function (object, key, value) {
 var document = __webpack_require__("e53d").document;
 module.exports = document && document.documentElement;
 
-
-/***/ }),
-
-/***/ "3301":
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__("f8fe");
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var add = __webpack_require__("499e").default
-var update = add("6f465cb9", content, true, {"sourceMap":false,"shadowMode":false});
 
 /***/ }),
 
@@ -1702,17 +1792,6 @@ module.exports = function (it) {
   return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
 };
 
-
-/***/ }),
-
-/***/ "3b71":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var _node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_5dd084a1_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("3301");
-/* harmony import */ var _node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_5dd084a1_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_5dd084a1_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
-/* unused harmony reexport * */
- /* unused harmony default export */ var _unused_webpack_default_export = (_node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_5dd084a1_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
 
 /***/ }),
 
@@ -2445,6 +2524,17 @@ if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 /***/ }),
 
+/***/ "5b4d":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var _node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_e1f5644c_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("3206");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_e1f5644c_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_e1f5644c_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* unused harmony reexport * */
+ /* unused harmony default export */ var _unused_webpack_default_export = (_node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_e1f5644c_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
 /***/ "5b4e":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2550,6 +2640,37 @@ module.exports = function (exec, skipClosing) {
   } catch (e) { /* empty */ }
   return safe;
 };
+
+
+/***/ }),
+
+/***/ "5d95":
+/***/ (function(module, exports, __webpack_require__) {
+
+var parse = __webpack_require__("c8d5")
+
+/**
+ * @category Hour Helpers
+ * @summary Get the hours of the given date.
+ *
+ * @description
+ * Get the hours of the given date.
+ *
+ * @param {Date|String|Number} date - the given date
+ * @returns {Number} the hours
+ *
+ * @example
+ * // Get the hours of 29 February 2012 11:45:00:
+ * var result = getHours(new Date(2012, 1, 29, 11, 45))
+ * //=> 11
+ */
+function getHours (dirtyDate) {
+  var date = parse(dirtyDate)
+  var hours = date.getHours()
+  return hours
+}
+
+module.exports = getHours
 
 
 /***/ }),
@@ -4338,6 +4459,37 @@ module.exports = {
 
 /***/ }),
 
+/***/ "c2b5":
+/***/ (function(module, exports, __webpack_require__) {
+
+var parse = __webpack_require__("c8d5")
+
+/**
+ * @category Weekday Helpers
+ * @summary Get the day of the week of the given date.
+ *
+ * @description
+ * Get the day of the week of the given date.
+ *
+ * @param {Date|String|Number} date - the given date
+ * @returns {Number} the day of week
+ *
+ * @example
+ * // Which day of the week is 29 February 2012?
+ * var result = getDay(new Date(2012, 1, 29))
+ * //=> 3
+ */
+function getDay (dirtyDate) {
+  var date = parse(dirtyDate)
+  var day = date.getDay()
+  return day
+}
+
+module.exports = getDay
+
+
+/***/ }),
+
 /***/ "c366":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -5331,6 +5483,21 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 
 /***/ }),
 
+/***/ "e6f0":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("2350")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".Wrapper[data-v-e1f5644c]{-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.Grid[data-v-e1f5644c],.Wrapper[data-v-e1f5644c]{display:-webkit-box;display:-ms-flexbox;display:flex;width:100%}.Grid[data-v-e1f5644c]{-webkit-box-orient:horizontal;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch}.Column[data-v-e1f5644c],.Grid[data-v-e1f5644c]{-webkit-box-direction:normal}.Column[data-v-e1f5644c]{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-ms-flex-direction:column;flex-direction:column;-webkit-box-pack:space-evenly;-ms-flex-pack:space-evenly;justify-content:space-evenly;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.GridCell[data-v-e1f5644c]{margin:6px 3px;height:25px;width:95px;-ms-touch-action:none;touch-action:none}.DateCell[data-v-e1f5644c]{width:100%;height:25px;background-color:#f2538a}.DateCell[data-v-e1f5644c]:hover{background-color:#a2c6f8}.selectedColor[data-v-e1f5644c]{background:#599af2}.unselectedColor[data-v-e1f5644c]{background:#fff}.DateLabel[data-v-e1f5644c]{height:37px;text-align:center;@media (max-width:699px){font-size:12px}}.TimeLabelCell[data-v-e1f5644c]{position:relative;display:block;width:100%;height:25px;margin:2px 0;text-align:center;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.TimeText[data-v-e1f5644c]{margin:0;@media (max-width:699px){font-size:10px}text-align:right}", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "e6f3":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -5687,21 +5854,6 @@ module.exports = function (it, Constructor, name, forbiddenField) {
 module.exports = function (it) {
   return typeof it === 'object' ? it !== null : typeof it === 'function';
 };
-
-
-/***/ }),
-
-/***/ "f8fe":
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__("2350")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".Wrapper[data-v-5dd084a1]{-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.Grid[data-v-5dd084a1],.Wrapper[data-v-5dd084a1]{display:-webkit-box;display:-ms-flexbox;display:flex;width:100%}.Grid[data-v-5dd084a1]{-webkit-box-orient:horizontal;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch}.Column[data-v-5dd084a1],.Grid[data-v-5dd084a1]{-webkit-box-direction:normal}.Column[data-v-5dd084a1]{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-ms-flex-direction:column;flex-direction:column;-webkit-box-pack:space-evenly;-ms-flex-pack:space-evenly;justify-content:space-evenly;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.GridCell[data-v-5dd084a1]{margin:6px 3px;height:25px;width:95px;-ms-touch-action:none;touch-action:none}.DateCell[data-v-5dd084a1]{width:100%;height:25px;background-color:#f2538a}.DateCell[data-v-5dd084a1]:hover{background-color:#a2c6f8}.selectedColor[data-v-5dd084a1]{background:#599af2}.unselectedColor[data-v-5dd084a1]{background:#fff}.DateLabel[data-v-5dd084a1]{height:37px;text-align:center;@media (max-width:699px){font-size:12px}}.TimeLabelCell[data-v-5dd084a1]{position:relative;display:block;width:100%;height:25px;margin:3px 0;text-align:center;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.TimeText[data-v-5dd084a1]{margin:0;@media (max-width:699px){font-size:10px}text-align:right}", ""]);
-
-// exports
 
 
 /***/ }),
