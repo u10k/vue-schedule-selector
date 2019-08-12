@@ -1,6 +1,6 @@
 {
   "name": "vue-schedule-selector",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "description": "this is a schedule selector for vue",
   "author": "dearzoe",
   "private": false,
@@ -10,6 +10,10 @@
     "build": "vue-cli-service build",
     "build-bundle": "vue-cli-service build --target lib --name vue-schedule-selector ./src/components/index.js",
     "lint": "vue-cli-service lint"
+  },
+  "repository": {
+    "type": "https",
+    "url": "https://github.com/dearzoe/vue-schedule-selector.git"
   },
   "keywords": [
     "vue",

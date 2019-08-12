@@ -6,7 +6,9 @@
               :maxTime="maxTime"
               :numDays="numDays"
               :selection="schedule"
-              :autoComplete="autoComplete"
+              :half-hour="halfHour"
+              :auto-complete="autoComplete"
+              :show-date="showDate"
               @onChange="handleDateChange"
       />
     </div>
@@ -23,10 +25,12 @@ export default {
   data() {
     return {
       minTime: 0,
-      maxTime: 23,
+      maxTime: 20,
       numDays: 7,
       schedule: [],
+      halfHour: true,
       autoComplete: true,
+      showDate: false,
     };
   },
   components: {
@@ -52,9 +56,9 @@ export default {
     background: rgba(0, 0, 0, 0.03);
     padding: 20px;
     width: 90%;
-    min-width: 800px;
+    max-width: 800px;
     & > * {
       flex-grow: 1;
-  }
+    }
   }
 </style>

@@ -19,5 +19,11 @@ export const dateIsBetween = (start, candidate, end) => {
   )
 }
 
-export const timeIsBetween = (start, candidate, end) =>
-  candidate.getHours() >= start.getHours() && candidate.getHours() <= end.getHours()
+export const timeIsBetween = (start, candidate, end) =>{
+  // return new Date(candidate).getTime() >= new Date(start).getTime() && new Date(candidate).getTime() <= new Date(end).getTime()
+  // return candidate.getHours() >= start.getHours() && candidate.getHours() <= end.getHours()
+  let halfCan = candidate.getMinutes() === 30 ? 0.5 : 0;
+  let halfStart = start.getMinutes() === 30 ? 0.5 : 0;
+  let halfEnd = end.getMinutes() === 30 ? 0.5 : 0;
+  return candidate.getHours() + halfCan >= start.getHours() + halfStart && candidate.getHours() + halfCan <= end.getHours() + halfEnd
+}
