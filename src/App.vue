@@ -9,15 +9,13 @@
               :half-hour="halfHour"
               :auto-complete="autoComplete"
               :show-date="showDate"
-              @onChange="handleDateChange"
-      />
+              @onChange="handleDateChange"/>
     </div>
   </div>
 </template>
 
 <script>
 import ScheduleSelector from "./components/ScheduleSelector";
-// import ScheduleSelector from "./components/index.js";
 
 export default {
   name: "schedule",

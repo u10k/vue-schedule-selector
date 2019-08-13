@@ -141,8 +141,8 @@ gulp.task('master-publish-patch', function (callback) {
         'update-patch',
         // 'default',
         'build-bundle',
-        // 'commit-changes',
-        // 'create-new-tag',
+        'commit-changes',
+        'create-new-tag',
         'publish',
         function (error) {
             if (error) {
