@@ -24,12 +24,12 @@ export default {
   // inheritAttrs: false,
   data() {
     return {
-      minTime: 0,
+      minTime: 7,
       maxTime: 20,
       numDays: 7,
       schedule: [],
       halfHour: true,
-      autoComplete: true,
+      autoComplete: false,
       showDate: false,
     };
   },
@@ -38,11 +38,10 @@ export default {
   },
   mounted() {},
   methods: {
-    handleDateChange(newSchedule) {
-      console.log('%c您选择是的时间是', 'color:darkred;text-shadow:3px 3px 3px red;font-size:20px;', newSchedule);
+    handleDateChange(newSchedule, customizeDate) {
       // 如果不赋值，则每次都是重新选择
+      console.log('%ccustomizeDate', 'color:darkred;text-shadow:3px 3px 3px red;font-size:20px;', customizeDate);
       this.schedule = newSchedule;
-
     },
   }
 };

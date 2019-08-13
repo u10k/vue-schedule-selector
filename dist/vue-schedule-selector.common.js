@@ -743,14 +743,14 @@ module.exports = function (exec) {
 
 "use strict";
 
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"2a389e64-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/ScheduleSelector.vue?vue&type=template&id=e1f5644c&scoped=true&
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('div',{staticClass:"Wrapper"},[_c('div',{staticClass:"Grid"},[_c('div',{staticClass:"Column"},[_c('div',{staticClass:"DateLabel"}),(_vm.minTime == 0)?_c('div',{staticClass:"TimeLabelCell"},[_c('div',{staticClass:"TimeText"},[_vm._v(_vm._s(_vm.formatHour(0)))])]):_vm._e(),_vm._l((_vm.maxTime),function(t){return (t >= _vm.minTime)?_c('div',{staticClass:"TimeLabelCell"},[_c('div',{staticClass:"TimeText"},[_vm._v(_vm._s(_vm.formatHour(t)))])]):_vm._e()})],2),_vm._l((this.dates),function(dayOfTimes){return _c('div',[_c('div',{staticClass:"Column"},[_c('div',{staticClass:"GridCell"},[_c('div',{staticClass:"DateLabel"},[_vm._v(_vm._s(_vm.getDay(dayOfTimes)))])])]),_vm._l((dayOfTimes),function(time){return _c('div',{staticClass:"GridCell"},[_c('div',{on:{"mousedown":function($event){return _vm.startHandler(time)},"mouseenter":function($event){return _vm.handleMouseEnterEvent(time)},"mouseup":function($event){return _vm.handleMouseUpEvent(time)}}},[_c('div',{class:_vm.selected(time)
-                  ? 'selectedColor DateCell'
-                  : 'unselectedColor DateCell',attrs:{"selected":_vm.selected(time)}})])])})],2)})],2)])])}
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"2a389e64-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/ScheduleSelector.vue?vue&type=template&id=ba360d30&scoped=true&
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('div',{staticClass:"Wrapper"},[_c('div',{staticClass:"Grid"},[_c('div',{staticClass:"Column"},[_c('div',{staticClass:"DateLabel"}),(_vm.minTime === 0 && _vm.halfHour === false)?_c('div',{staticClass:"TimeLabelCell"},[_c('div',{staticClass:"TimeText"},[_vm._v(_vm._s(_vm.formatHour(0)))])]):_vm._e(),_vm._l((_vm.maxTime),function(t){return _c('div',[(t >= _vm.minTime)?_c('div',{class:{ 'TimeLabelCell': true, 'halfHour': _vm.halfHour}},[_c('div',{staticClass:"TimeText"},[_vm._v(_vm._s(_vm.formatHour(t)))])]):_vm._e()])})],2),_vm._l((this.dates),function(dayOfTimes){return _c('div',[_c('div',{staticClass:"Column"},[_c('div',{staticClass:"GridCell"},[_c('div',{staticClass:"DateLabel"},[(_vm.showDate)?[_vm._v(_vm._s(_vm.formatDate(dayOfTimes, "M/D")))]:[_vm._v(_vm._s(_vm.getDay(dayOfTimes)))]],2)])]),_vm._l((dayOfTimes),function(time){return _c('div',{staticClass:"GridCell"},[_c('div',{on:{"mousedown":function($event){return _vm.startHandler(time)},"mouseenter":function($event){return _vm.handleMouseEnterEvent(time)},"mouseup":function($event){return _vm.handleMouseUpEvent(time)}}},[_c('div',{class:_vm.selected(time)
+    ? 'selectedColor DateCell'
+    : 'unselectedColor DateCell',attrs:{"selected":_vm.selected(time)}})])])})],2)})],2)])])}
 var staticRenderFns = []
 
 
-// CONCATENATED MODULE: ./src/components/ScheduleSelector.vue?vue&type=template&id=e1f5644c&scoped=true&
+// CONCATENATED MODULE: ./src/components/ScheduleSelector.vue?vue&type=template&id=ba360d30&scoped=true&
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es6.set.js
 var es6_set = __webpack_require__("4f7f");
@@ -871,7 +871,12 @@ var date_utils_dateIsBetween = function dateIsBetween(start, candidate, end) {
   return (startOfCandidate.getTime() === startOfStart.getTime() || is_after_default()(startOfCandidate, startOfStart)) && (startOfCandidate.getTime() === startOfEnd.getTime() || is_after_default()(startOfEnd, startOfCandidate));
 };
 var timeIsBetween = function timeIsBetween(start, candidate, end) {
-  return candidate.getHours() >= start.getHours() && candidate.getHours() <= end.getHours();
+  // return new Date(candidate).getTime() >= new Date(start).getTime() && new Date(candidate).getTime() <= new Date(end).getTime()
+  // return candidate.getHours() >= start.getHours() && candidate.getHours() <= end.getHours()
+  var halfCan = candidate.getMinutes() === 30 ? 0.5 : 0;
+  var halfStart = start.getMinutes() === 30 ? 0.5 : 0;
+  var halfEnd = end.getMinutes() === 30 ? 0.5 : 0;
+  return candidate.getHours() + halfCan >= start.getHours() + halfStart && candidate.getHours() + halfCan <= end.getHours() + halfEnd;
 };
 // CONCATENATED MODULE: ./src/components/selection-schemes/linear.js
 // @flow
@@ -977,6 +982,11 @@ var square_square = function square(selectionStart, selectionEnd, dateList) {
 //
 //
 //
+//
+//
+//
+//
+//
 // Import only the methods we need from date-fns in order to keep build size small
 
 
@@ -1023,54 +1033,28 @@ var selectionSchemeHandlers = {
         [];
       }
     },
+    halfHour: {
+      type: Boolean,
+      default: false
+    },
     autoComplete: {
+      type: Boolean,
+      default: false
+    },
+    showDate: {
       type: Boolean,
       default: false
     }
   },
-  watch: {
-    selection: function selection(dateList) {
-      // 如果开通自动补齐功能，则自动补齐选择一天中的空隙时间
-      if (this.autoComplete) {
-        var dayObj = {},
-            dayAry = [];
-
-        for (var i = 0; i < dateList.length; i++) {
-          if (!dayObj["".concat(format_default()(dateList[i], 'YYYY/MM/DD'))]) {
-            dayObj["".concat(format_default()(dateList[i], 'YYYY/MM/DD'))] = [];
-          }
-
-          dayObj["".concat(format_default()(dateList[i], 'YYYY/MM/DD'))].push(get_hours_default()(dateList[i]));
-        }
-
-        for (var key in dayObj) {
-          var emptyArr = [];
-          var max = Math.max.apply(null, dayObj[key]);
-          var min = Math.min.apply(null, dayObj[key]);
-
-          for (var startTime = min; startTime <= max; startTime++) {
-            emptyArr.push(add_hours_default()(new Date(key), startTime));
-          }
-
-          dayAry = dayAry.concat(emptyArr);
-        }
-
-        this.selectionDraft = dayAry;
-      }
-    }
-  },
   created: function created() {
-    // this.selectionSchemeHandlers = {
-    //     linear: selectionSchemes.linear,
-    //     square: selectionSchemes.square
-    // }
     var startTime = start_of_day_default()(this.startDate);
     this.cellToDate = new Map();
 
     for (var d = 0; d < this.numDays; d += 1) {
       var currentDay = [];
+      var flag = this.halfHour ? 0.5 : 1;
 
-      for (var h = this.minTime; h <= this.maxTime; h += 1) {
+      for (var h = this.halfHour ? this.minTime + 0.5 : this.minTime; h <= this.maxTime; h += flag) {
         currentDay.push(add_hours_default()(add_days_default()(startTime, d), h));
       }
 
@@ -1092,6 +1076,9 @@ var selectionSchemeHandlers = {
     //   const abb = hour < 12 || hour === 24 ? 'am' : 'pm'
     //   return `${h}${abb}`
     // },
+    formatDate: function formatDate(dayOfTimes, dateFormat) {
+      return format_default()(dayOfTimes[0], dateFormat);
+    },
     getDay: function getDay(dayOfTimes) {
       var day = '星期日';
 
@@ -1127,7 +1114,48 @@ var selectionSchemeHandlers = {
 
       return day;
     },
+    autoCompleteDate: function autoCompleteDate(dateList) {
+      // 如果开通自动补齐功能，则自动补齐选择一天中的空隙时间
+      var dayObj = {},
+          dayAry = [];
+
+      for (var i = 0; i < dateList.length; i++) {
+        if (!dayObj["".concat(format_default()(dateList[i], 'YYYY/MM/DD'))]) {
+          dayObj["".concat(format_default()(dateList[i], 'YYYY/MM/DD'))] = [];
+        }
+
+        if (new Date(dateList[i]).getMinutes() === 30) {
+          dayObj["".concat(format_default()(dateList[i], 'YYYY/MM/DD'))].push(get_hours_default()(dateList[i]) + 0.5);
+        } else {
+          dayObj["".concat(format_default()(dateList[i], 'YYYY/MM/DD'))].push(get_hours_default()(dateList[i]));
+        }
+      }
+
+      console.log('%cdayObj', 'color:darkred;text-shadow:3px 3px 3px red;font-size:20px;', dayObj);
+
+      for (var key in dayObj) {
+        var emptyArr = [];
+        var max = Math.max.apply(null, dayObj[key]);
+        var min = Math.min.apply(null, dayObj[key]);
+        var flag = this.halfHour ? 0.5 : 1; // min = this.halfHour ? min += 0.5 : min;
+
+        console.log('%cmin', 'color:darkred;text-shadow:3px 3px 3px red;font-size:20px;', min, max, flag);
+
+        for (var startTime = min; startTime <= max; startTime += flag) {
+          emptyArr.push(add_hours_default()(new Date(key), startTime));
+        }
+
+        console.log(emptyArr);
+        dayAry = dayAry.concat(emptyArr);
+      }
+
+      return dayAry;
+    },
     endSelection: function endSelection() {
+      if (this.autoComplete) {
+        this.selectionDraft = this.autoCompleteDate(this.selectionDraft);
+      }
+
       this.$emit("onChange", this.selectionDraft);
       this.selectionType = null;
       this.selectionStart = null;
@@ -1162,11 +1190,12 @@ var selectionSchemeHandlers = {
       this.updateAvailabilityDraft(time); // 不要在这里调用this.endSelection（）因为文档mouseup处理程序会这样做
     },
     // 给定结束日期，确定应在此草稿中选择的所有日期
-    updateAvailabilityDraft: function updateAvailabilityDraft(selectionEnd, callback) {
+    updateAvailabilityDraft: function updateAvailabilityDraft(selectionEnd) {
       var selectionType = this.selectionType;
       var selectionStart = this.selectionStart;
       if (selectionType === null || selectionStart === null) return;
       var newSelection = [];
+      console.log('%ctime', 'color:darkred;text-shadow:3px 3px 3px red;font-size:20px;', selectionStart, selectionEnd);
 
       if (selectionStart && selectionEnd && selectionType) {
         newSelection = selectionSchemeHandlers[this.selectionScheme](selectionStart, selectionEnd, this.dates);
@@ -1191,8 +1220,8 @@ var selectionSchemeHandlers = {
 });
 // CONCATENATED MODULE: ./src/components/ScheduleSelector.vue?vue&type=script&lang=js&
  /* harmony default export */ var components_ScheduleSelectorvue_type_script_lang_js_ = (ScheduleSelectorvue_type_script_lang_js_); 
-// EXTERNAL MODULE: ./src/components/ScheduleSelector.vue?vue&type=style&index=0&id=e1f5644c&scoped=true&lang=css&
-var ScheduleSelectorvue_type_style_index_0_id_e1f5644c_scoped_true_lang_css_ = __webpack_require__("5b4d");
+// EXTERNAL MODULE: ./src/components/ScheduleSelector.vue?vue&type=style&index=0&id=ba360d30&scoped=true&lang=css&
+var ScheduleSelectorvue_type_style_index_0_id_ba360d30_scoped_true_lang_css_ = __webpack_require__("ded3");
 
 // CONCATENATED MODULE: ./node_modules/vue-loader/lib/runtime/componentNormalizer.js
 /* globals __VUE_SSR_CONTEXT__ */
@@ -1304,7 +1333,7 @@ var component = normalizeComponent(
   staticRenderFns,
   false,
   null,
-  "e1f5644c",
+  "ba360d30",
   null
   
 )
@@ -1649,21 +1678,6 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
   return methods;
 };
 
-
-/***/ }),
-
-/***/ "3206":
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__("e6f0");
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var add = __webpack_require__("499e").default
-var update = add("101aa95a", content, true, {"sourceMap":false,"shadowMode":false});
 
 /***/ }),
 
@@ -2521,17 +2535,6 @@ module.exports = getDayOfYear
 var core = module.exports = { version: '2.6.9' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
-
-/***/ }),
-
-/***/ "5b4d":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var _node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_e1f5644c_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("3206");
-/* harmony import */ var _node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_e1f5644c_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_e1f5644c_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
-/* unused harmony reexport * */
- /* unused harmony default export */ var _unused_webpack_default_export = (_node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_e1f5644c_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
 
 /***/ }),
 
@@ -4287,6 +4290,21 @@ module.exports = startOfISOWeek
 
 /***/ }),
 
+/***/ "b783":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("2350")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".Wrapper[data-v-ba360d30]{-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.Grid[data-v-ba360d30],.Wrapper[data-v-ba360d30]{display:-webkit-box;display:-ms-flexbox;display:flex;width:100%}.Grid[data-v-ba360d30]{-webkit-box-orient:horizontal;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch}.Column[data-v-ba360d30],.Grid[data-v-ba360d30]{-webkit-box-direction:normal}.Column[data-v-ba360d30]{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-ms-flex-direction:column;flex-direction:column;-webkit-box-pack:space-evenly;-ms-flex-pack:space-evenly;justify-content:space-evenly;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.GridCell[data-v-ba360d30]{margin:6px 3px;height:25px;width:95px;-ms-touch-action:none;touch-action:none}.DateCell[data-v-ba360d30]{width:100%;height:25px;background-color:#f2538a}.DateCell[data-v-ba360d30]:hover{background-color:#a2c6f8}.selectedColor[data-v-ba360d30]{background:#599af2}.unselectedColor[data-v-ba360d30]{background:#fff}.DateLabel[data-v-ba360d30]{height:37px;text-align:center;@media (max-width:699px){font-size:12px}}.TimeLabelCell[data-v-ba360d30]{position:relative;display:block;width:100%;height:25px;margin:2px 0;text-align:center;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.halfHour[data-v-ba360d30]{margin:0 3px 3px;height:56px;background-color:#fff;border-right:1px solid #ddd}.TimeText[data-v-ba360d30]{margin:0;@media (max-width:699px){font-size:10px}text-align:right}", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "b8e3":
 /***/ (function(module, exports) {
 
@@ -5354,6 +5372,17 @@ module.exports = function (target, src, safe) {
 
 /***/ }),
 
+/***/ "ded3":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var _node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_ba360d30_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("e836");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_ba360d30_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_ba360d30_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* unused harmony reexport * */
+ /* unused harmony default export */ var _unused_webpack_default_export = (_node_modules_vue_style_loader_index_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ScheduleSelector_vue_vue_type_style_index_0_id_ba360d30_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
 /***/ "e0b8":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -5483,21 +5512,6 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 
 /***/ }),
 
-/***/ "e6f0":
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__("2350")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".Wrapper[data-v-e1f5644c]{-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.Grid[data-v-e1f5644c],.Wrapper[data-v-e1f5644c]{display:-webkit-box;display:-ms-flexbox;display:flex;width:100%}.Grid[data-v-e1f5644c]{-webkit-box-orient:horizontal;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch}.Column[data-v-e1f5644c],.Grid[data-v-e1f5644c]{-webkit-box-direction:normal}.Column[data-v-e1f5644c]{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-ms-flex-direction:column;flex-direction:column;-webkit-box-pack:space-evenly;-ms-flex-pack:space-evenly;justify-content:space-evenly;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.GridCell[data-v-e1f5644c]{margin:6px 3px;height:25px;width:95px;-ms-touch-action:none;touch-action:none}.DateCell[data-v-e1f5644c]{width:100%;height:25px;background-color:#f2538a}.DateCell[data-v-e1f5644c]:hover{background-color:#a2c6f8}.selectedColor[data-v-e1f5644c]{background:#599af2}.unselectedColor[data-v-e1f5644c]{background:#fff}.DateLabel[data-v-e1f5644c]{height:37px;text-align:center;@media (max-width:699px){font-size:12px}}.TimeLabelCell[data-v-e1f5644c]{position:relative;display:block;width:100%;height:25px;margin:2px 0;text-align:center;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.TimeText[data-v-e1f5644c]{margin:0;@media (max-width:699px){font-size:10px}text-align:right}", ""]);
-
-// exports
-
-
-/***/ }),
-
 /***/ "e6f3":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -5614,6 +5628,21 @@ function ordinal (number) {
 
 module.exports = buildFormatLocale
 
+
+/***/ }),
+
+/***/ "e836":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("b783");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = __webpack_require__("499e").default
+var update = add("60695065", content, true, {"sourceMap":false,"shadowMode":false});
 
 /***/ }),
 

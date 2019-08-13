@@ -3,14 +3,9 @@
     <div class="Wrapper">
       <div class="Grid">
         <div class="Column">
-          <div class="DateLabel"></div>
-          <div class="TimeLabelCell" v-if="minTime === 0 && halfHour === false">
-            <div class="TimeText">{{ formatHour(0) }}</div>
-          </div>
-          <div v-for="t in maxTime">
-            <div :class="{ 'TimeLabelCell': true, 'halfHour': halfHour}"  v-if="t >= minTime">
-              <div class="TimeText">{{ formatHour(t) }}</div>
-            </div>
+          <div class="DateEmptyLabel"></div>
+          <div :class="{ 'TimeLabelCell': true, 'halfHour': halfHour}" v-for="t in maxTimeLabel">
+            <div class="TimeText">{{ formatHour(t) }}</div>
           </div>
         </div>
         <div v-for="dayOfTimes in this.dates">
@@ -103,13 +98,26 @@ selected(time)
         default: false
       }
     },
+    computed: {
+      maxTimeLabel: function () {
+        let maxTimeAry = []
+        for(let i = 0; i <= this.maxTime; i++) {
+          maxTimeAry.push(i);
+        }
+        // if(this.halfHour) maxTimeAry.pop()
+        return maxTimeAry.filter((time) => {
+          return time >= this.minTime
+        })
+      }
+    },
     created() {
       const startTime = startOfDay(this.startDate);
       this.cellToDate = new Map();
       for (let d = 0; d < this.numDays; d += 1) {
         const currentDay = [];
         let flag = this.halfHour ? 0.5 : 1;
-        for (let h = this.halfHour ? this.minTime + 0.5 : this.minTime; h <= this.maxTime; h += flag) {
+        let max = this.halfHour ? this.maxTime + 1 : this.maxTime;
+        for (let h = this.halfHour ? this.minTime + 0.5 : this.minTime; h <= max; h += flag) {
           currentDay.push(addHours(addDays(startTime, d), h));
         }
         this.dates.push(currentDay);
@@ -120,16 +128,8 @@ selected(time)
     },
     methods: {
       formatHour(hour) {
-        const h = hour === 0 || hour === 12 || hour === 24 ? 12 : hour % 12;
-        const abb = hour < 12 || hour === 24 ? "上午" : "下午";
-        // return `${abb}${h}`
-        return `${hour === 24 ? "00" : hour}:00`;
+        return `${hour === 0 ? "24" : hour}:00`;
       },
-      // formatHour(hour) {
-      //   const h = hour === 0 || hour === 12 || hour === 24 ? 12 : hour % 12
-      //   const abb = hour < 12 || hour === 24 ? 'am' : 'pm'
-      //   return `${h}${abb}`
-      // },
       formatDate(dayOfTimes, dateFormat) {
         return formatDate(dayOfTimes[0], dateFormat);
       },
@@ -160,6 +160,30 @@ selected(time)
         }
         return day;
       },
+      customizeDate(dateList) {
+        let dayObj = {};
+        for (let i = 0; i < dateList.length; i++) {
+          if(!dayObj[`${formatDate(dateList[i], 'YYYY/MM/DD')}`]){
+            dayObj[`${formatDate(dateList[i], 'YYYY/MM/DD')}`] = [];
+          }
+          if(new Date(dateList[i]).getMinutes() === 30){
+            dayObj[`${formatDate(dateList[i], 'YYYY/MM/DD')}`].push(getHours(dateList[i])+0.5);
+          } else {
+            dayObj[`${formatDate(dateList[i], 'YYYY/MM/DD')}`].push(getHours(dateList[i]));
+          }
+        }
+        for (let key in dayObj) {
+          let emptyObj = {};
+          let max = Math.max.apply(null, dayObj[key]);
+          let min = Math.min.apply(null, dayObj[key]);
+          min = this.halfHour ? min -= 0.5 : min;
+          emptyObj.week = this.getDay([key]);
+          emptyObj.minTime = addHours(new Date(key), min);
+          emptyObj.maxTime = addHours(new Date(key), max);
+          dayObj[key] = Object.assign({}, emptyObj);
+        }
+        return dayObj;
+      },
       autoCompleteDate(dateList) {
         // 如果开通自动补齐功能，则自动补齐选择一天中的空隙时间
         let dayObj = {},dayAry = [];
@@ -173,18 +197,15 @@ selected(time)
             dayObj[`${formatDate(dateList[i], 'YYYY/MM/DD')}`].push(getHours(dateList[i]));
           }
         }
-        console.log('%cdayObj', 'color:darkred;text-shadow:3px 3px 3px red;font-size:20px;', dayObj);
         for (let key in dayObj) {
           let emptyArr = [];
           let max = Math.max.apply(null, dayObj[key]);
           let min = Math.min.apply(null, dayObj[key]);
           let flag = this.halfHour ? 0.5 : 1;
           // min = this.halfHour ? min += 0.5 : min;
-          console.log('%cmin', 'color:darkred;text-shadow:3px 3px 3px red;font-size:20px;', min,max,flag);
           for (let startTime = min; startTime<=max;startTime += flag){
             emptyArr.push(addHours(new Date(key), startTime))
           }
-          console.log(emptyArr)
           dayAry = dayAry.concat(emptyArr)
         }
         return dayAry;
@@ -193,7 +214,8 @@ selected(time)
         if (this.autoComplete) {
           this.selectionDraft = this.autoCompleteDate(this.selectionDraft)
         }
-        this.$emit("onChange", this.selectionDraft);
+        let customizeDayObj = this.customizeDate(this.selectionDraft);
+        this.$emit("onChange", this.selectionDraft, customizeDayObj);
         this.selectionType = null;
         this.selectionStart = null;
       },
@@ -230,7 +252,6 @@ selected(time)
         if (selectionType === null || selectionStart === null) return;
 
         let newSelection = [];
-        console.log('%ctime', 'color:darkred;text-shadow:3px 3px 3px red;font-size:20px;', selectionStart, selectionEnd);
         if (selectionStart && selectionEnd && selectionType) {
           newSelection = selectionSchemeHandlers[this.selectionScheme](
                   selectionStart,
@@ -298,9 +319,10 @@ selected(time)
   .DateLabel {
     height: 37px;
     text-align: center;
-    @media (max-width: 699px) {
-      font-size: 12px;
-    }
+  }
+  .DateEmptyLabel{
+    height: 37px;
+    text-align: center;
   }
   .TimeLabelCell {
     position: relative;
@@ -315,6 +337,7 @@ selected(time)
   }
   .halfHour{
     margin: 0 3px 3px;
+    /*margin: 6px 3px 0px;*/
     height: 56px;
     background-color: #fff;
     border-right:1px solid #ddd;
