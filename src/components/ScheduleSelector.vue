@@ -178,8 +178,20 @@ selected(time)
           let min = Math.min.apply(null, dayObj[key]);
           min = this.halfHour ? min -= 0.5 : min;
           emptyObj.week = this.getDay([key]);
-          emptyObj.minTime = addHours(new Date(key), min);
-          emptyObj.maxTime = addHours(new Date(key), max);
+          emptyObj.minDate = addHours(new Date(key), min);
+          emptyObj.maxDate = addHours(new Date(key), max);
+          if(emptyObj.maxDate.getMinutes() === 30){
+            emptyObj.maxHour = emptyObj.maxDate.getHours() + 0.5;
+          } else {
+            emptyObj.maxHour = emptyObj.maxDate.getHours()
+          }
+          if(emptyObj.minDate.getMinutes() === 30){
+            emptyObj.minHour = emptyObj.minDate.getHours() + 0.5;
+          } else {
+            emptyObj.minHour = emptyObj.minDate.getHours()
+          }
+          emptyObj.min = formatDate(emptyObj.minDate, 'HH:mm');
+          emptyObj.max = formatDate(emptyObj.maxDate, 'HH:mm');
           dayObj[key] = Object.assign({}, emptyObj);
         }
         return dayObj;
