@@ -110,6 +110,11 @@ selected(time)
         })
       }
     },
+    watch: {
+      selection(val) {
+        this.selectionDraft = val;
+      }
+    },
     created() {
       const startTime = startOfDay(this.startDate);
       this.cellToDate = new Map();
@@ -198,6 +203,7 @@ selected(time)
       },
       autoCompleteDate(dateList) {
         // 如果开通自动补齐功能，则自动补齐选择一天中的空隙时间
+        console.log('dataList',dateList)
         let dayObj = {},dayAry = [];
         for (let i = 0; i < dateList.length; i++) {
           if(!dayObj[`${formatDate(dateList[i], 'YYYY/MM/DD')}`]){
@@ -241,6 +247,7 @@ selected(time)
         this.handleSelectionStartEvent(time);
       },
       handleSelectionStartEvent(startTime) {
+        console.log('%cstartTime', 'color:darkred;text-shadow:3px 3px 3px red;font-size:20px;', startTime);
         //检查是否选中/取消选择startTime单元格以确定是否应该执行此拖动选择
         //添加值或删除值
         const timeSelected = this.selection.find(a => isSameMinute(a, startTime));

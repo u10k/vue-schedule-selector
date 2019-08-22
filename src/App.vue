@@ -27,7 +27,7 @@ export default {
       numDays: 7,
       schedule: [],
       halfHour: true,
-      autoComplete: false,
+      autoComplete: true,
       showDate: false,
     };
   },
